@@ -1,19 +1,22 @@
-import { useRouter } from "expo-router";
+import BackButton from "@/components/BackButton";
+import { router } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function VerifyCodeScreen() {
-	const router = useRouter();
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmNewPassword, setConfirmNewPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+	const handleNavigate = () => {
+		router.dismissAll();
+		router.replace("/");
+	};
+
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity onPress={() => router.back()}>
-				<Text style={styles.backArrow}>←</Text>
-			</TouchableOpacity>
+			<BackButton />
 
 			<Text style={styles.title}>Esqueceu a senha</Text>
 
@@ -21,7 +24,7 @@ export default function VerifyCodeScreen() {
 				<Text style={styles.label}>Crie uma nova senha</Text>
 				<Text style={styles.subtitle}>Digite uma nova senha.</Text>
 
-				<View style={styles.newPassContainer}>
+				<View style={styles.newPasswordContainer}>
 					<Text style={styles.label}>Nova senha</Text>
 					<View style={styles.passwordContainer}>
 						<TextInput
@@ -31,9 +34,9 @@ export default function VerifyCodeScreen() {
 							value={newPassword}
 							onChangeText={setNewPassword}
 						/>
-						<TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+						<Pressable onPress={() => setShowPassword(!showPassword)}>
 							<Text style={styles.showPassword}>{showPassword ? "🙈" : "👁️"}</Text>
-						</TouchableOpacity>
+						</Pressable>
 					</View>
 
 					<View>
@@ -76,16 +79,16 @@ export default function VerifyCodeScreen() {
 							value={confirmNewPassword}
 							onChangeText={setConfirmNewPassword}
 						/>
-						<TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+						<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
 							<Text style={styles.showPassword}>{showConfirmPassword ? "🙈" : "👁️"}</Text>
-						</TouchableOpacity>
+						</Pressable>
 					</View>
 				</View>
 			</View>
 
-			<TouchableOpacity style={styles.button} onPress={() => router.push("/")}>
+			<Pressable style={styles.button} onPress={handleNavigate}>
 				<Text style={styles.buttonText}>Confirmar nova senha</Text>
-			</TouchableOpacity>
+			</Pressable>
 		</View>
 	);
 }
@@ -95,10 +98,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: "#f6f9ff",
 		padding: 24,
-	},
-	backArrow: {
-		fontSize: 22,
-		color: "#000",
+		alignItems: "flex-start",
 	},
 	title: {
 		fontSize: 22,
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 		borderWidth: 1,
 		borderColor: "#e0e0e0",
+		width: "100%",
 	},
 	label: {
 		fontSize: 16,
@@ -137,21 +138,13 @@ const styles = StyleSheet.create({
 		paddingVertical: 14,
 		borderRadius: 8,
 		marginTop: 30,
+		width: "100%",
 	},
 	buttonText: {
 		textAlign: "center",
 		color: "#fff",
 		fontWeight: "700",
 		fontSize: 16,
-	},
-	resendText: {
-		textAlign: "center",
-		marginTop: 16,
-		color: "#555",
-	},
-	link: {
-		color: "#2E6FF2",
-		fontWeight: "600",
 	},
 	showPassword: {
 		marginLeft: 8,
@@ -175,7 +168,7 @@ const styles = StyleSheet.create({
 		color: "#555",
 		fontSize: 13,
 	},
-	newPassContainer: {
+	newPasswordContainer: {
 		marginBottom: 16,
 	},
 });

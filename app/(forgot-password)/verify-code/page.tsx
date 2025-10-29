@@ -1,6 +1,7 @@
-import { useRouter } from "expo-router";
+import BackButton from "@/components/BackButton";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function VerifyCodeScreen() {
 	const router = useRouter();
@@ -14,9 +15,7 @@ export default function VerifyCodeScreen() {
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity onPress={() => router.back()}>
-				<Text style={styles.backArrow}>←</Text>
-			</TouchableOpacity>
+			<BackButton />
 
 			<Text style={styles.title}>Esqueceu a senha</Text>
 
@@ -41,12 +40,15 @@ export default function VerifyCodeScreen() {
 				</View>
 			</View>
 
-			<TouchableOpacity style={styles.button} onPress={() => router.push("/new-password")}>
+			<Link href={"/(forgot-password)/new-password/page"} style={styles.button}>
 				<Text style={styles.buttonText}>Verificar Código</Text>
-			</TouchableOpacity>
+			</Link>
 
 			<Text style={styles.resendText}>
-				Não recebeu o e-mail? <Text style={styles.link}>Solicite Novamente</Text>
+				Não recebeu o e-mail?
+				<Pressable onPress={() => router.back()}>
+					<Text style={styles.link}>Solicite Novamente</Text>
+				</Pressable>
 			</Text>
 		</View>
 	);
@@ -57,6 +59,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: "#f6f9ff",
 		padding: 24,
+		alignItems: "flex-start",
 	},
 	backArrow: {
 		fontSize: 22,
@@ -103,6 +106,7 @@ const styles = StyleSheet.create({
 		paddingVertical: 14,
 		borderRadius: 8,
 		marginTop: 30,
+		width: "100%",
 	},
 	buttonText: {
 		textAlign: "center",
@@ -114,9 +118,11 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		marginTop: 16,
 		color: "#555",
+		width: "100%",
 	},
 	link: {
 		color: "#2E6FF2",
 		fontWeight: "600",
+		marginLeft: 3,
 	},
 });

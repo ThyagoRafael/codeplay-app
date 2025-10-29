@@ -1,0 +1,11 @@
+{
+	"user": {
+		"name": "Carlinhos Maia",
+		"email": "labobonico@email.com",
+		"password": "morangodoamor",
+		"class": "ENSOF1AM2",
+		"learningProgress": 48,
+		"imageURL": "../assets/foto_perfil.png"
+	},
+	"courses": {}
+}

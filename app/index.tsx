@@ -1,55 +1,62 @@
-import { Link } from "expo-router";
+import ShowPasswordButton from "@/components/ShowPasswordButton";
+import { colors } from "@/constants/colors";
+import { router } from "expo-router";
 import { useState } from "react";
 import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Logo from "../assets/images/logo-codeplay-grande.png";
 
 export default function LoginScreen() {
-	const [matricula, setMatricula] = useState<string>("");
-	const [senha, setSenha] = useState<string>("");
+	const [registry, setRegistry] = useState<string>("");
+	const [password, setPassword] = useState<string>("");
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 
-	const mostrarDados = () => {
-		alert(`Matrícula: ${matricula}, Senha: ${senha}`);
+	const handleLogin = () => {
+		router.replace("/home/page");
 	};
-
-	// const
 
 	return (
 		<View style={styles.container}>
 			<Image source={Logo} style={styles.logo} />
 
-			<View style={styles.formBox}>
-				<Text style={styles.label}>Matrícula</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="Entre com sua matrícula"
-					value={matricula}
-					onChangeText={setMatricula}
-					keyboardType="numeric"
-					maxLength={8}
-				/>
-
-				<Text style={styles.label}>Senha</Text>
-				<View style={styles.passwordContainer}>
+			<View style={styles.formContainer}>
+				<View style={styles.inputContainer}>
+					<Text style={styles.label}>Matrícula</Text>
 					<TextInput
-						style={[styles.input, { flex: 1 }]}
-						placeholder="Insira sua senha"
-						secureTextEntry={!showPassword}
-						value={senha}
-						onChangeText={setSenha}
+						style={styles.input}
+						placeholder="Entre com sua matrícula"
+						value={registry}
+						onChangeText={setRegistry}
+						keyboardType="numeric"
+						maxLength={8}
 					/>
-					<Pressable onPress={() => setShowPassword(!showPassword)}>
-						<Text style={styles.showPassword}>{showPassword ? "🙈" : "👁️"}</Text>
-					</Pressable>
 				</View>
 
-				<Link href="/forgot-password" style={styles.forgotText}>
-					Esqueceu sua Senha?
-				</Link>
+				<View style={styles.inputContainer}>
+					<Text style={styles.label}>Senha</Text>
+					<View style={styles.passwordContainer}>
+						<TextInput
+							style={[styles.input, { flex: 1 }]}
+							placeholder="Insira sua senha"
+							secureTextEntry={!showPassword}
+							value={password}
+							onChangeText={setPassword}
+						/>
+						<ShowPasswordButton showPassword={showPassword} setShowPassword={setShowPassword} />
+					</View>
+				</View>
+
+				<View style={styles.forgotButtonContainer}>
+					<Pressable
+						onPress={() => router.push("/(forgot-password)/get-email/page")}
+						style={styles.forgotButton}
+					>
+						<Text style={styles.forgotButtonText}>Esqueceu sua Senha?</Text>
+					</Pressable>
+				</View>
 			</View>
 
-			<Pressable style={styles.button} onPress={mostrarDados}>
-				<Text style={styles.buttonText}>Entrar</Text>
+			<Pressable style={styles.loginButton} onPress={handleLogin}>
+				<Text style={styles.loginButtonText}>Entrar</Text>
 			</Pressable>
 		</View>
 	);
@@ -61,61 +68,61 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		paddingHorizontal: 24,
-		backgroundColor: "#f6f9ff",
+		backgroundColor: colors.mainBackgroundColor,
 	},
 	logo: {
 		width: 80,
 		height: 80,
 		resizeMode: "contain",
 	},
-	title: {
-		fontSize: 26,
-		fontWeight: "700",
-		color: "#1E1E1E",
-		marginVertical: 10,
-	},
-	formBox: {
+	formContainer: {
 		width: "100%",
 		backgroundColor: "#fff",
 		borderRadius: 10,
 		padding: 16,
 		marginTop: 20,
 		borderWidth: 1,
-		borderColor: "#c6c6ff",
+		borderColor: colors.borderColor,
+		gap: 12,
+	},
+	inputContainer: {
+		gap: 8,
 	},
 	label: {
 		fontSize: 16,
 		fontWeight: "600",
-		marginBottom: 8,
 	},
 	input: {
-		backgroundColor: "#f2f3f5",
+		backgroundColor: colors.inputBackgroundColor,
 		borderRadius: 8,
 		paddingHorizontal: 12,
 		paddingVertical: 10,
-		marginBottom: 12,
+		// marginBottom: 12,
 	},
 	passwordContainer: {
 		flexDirection: "row",
 		alignItems: "center",
 	},
-	showPassword: {
-		marginLeft: 8,
-		fontSize: 18,
+
+	forgotButtonContainer: {
+		alignItems: "flex-end",
 	},
-	forgotText: {
-		alignSelf: "flex-end",
-		color: "#0066ff",
+	forgotButton: {
+		paddingVertical: 10,
+		alignItems: "flex-end",
+	},
+	forgotButtonText: {
+		color: colors.primaryColor,
 		fontWeight: "500",
 	},
-	button: {
-		backgroundColor: "#2E6FF2",
+	loginButton: {
+		backgroundColor: colors.primaryColor,
 		width: "100%",
 		paddingVertical: 14,
 		borderRadius: 8,
 		marginTop: 24,
 	},
-	buttonText: {
+	loginButtonText: {
 		textAlign: "center",
 		color: "#fff",
 		fontWeight: "700",
