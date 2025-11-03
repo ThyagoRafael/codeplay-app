@@ -2,16 +2,28 @@ import ShowPasswordButton from "@/components/ShowPasswordButton";
 import { colors } from "@/constants/colors";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import Logo from "../assets/images/logo-codeplay-grande.png";
+import { Alert, Image, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import Logo from "../assets/images/logo.png";
 
 export default function LoginScreen() {
 	const [registry, setRegistry] = useState<string>("");
+	const [validRegistry, setValidRegistry] = useState<boolean>(true);
 	const [password, setPassword] = useState<string>("");
 	const [showPassword, setShowPassword] = useState<boolean>(false);
 
+	const handleChangeRegistry = (text: string) => {
+		const newText = text.replace(/[^0-9]/g, "");
+		setRegistry(newText);
+
+		const registryRegex = /^[0-9]{5,7}$/;
+		setValidRegistry(registryRegex.test(newText));
+	};
+
 	const handleLogin = () => {
-		router.replace("/home/page");
+		if (!registry || !validRegistry || !password) {
+			return Alert.alert("Atenção", "Digite uma matrícula e/ou senha válida!");
+		}
+		router.replace("/(tabs)/home/page");
 	};
 
 	return (
@@ -25,10 +37,11 @@ export default function LoginScreen() {
 						style={styles.input}
 						placeholder="Entre com sua matrícula"
 						value={registry}
-						onChangeText={setRegistry}
+						onChangeText={handleChangeRegistry}
 						keyboardType="numeric"
-						maxLength={8}
+						maxLength={7}
 					/>
+					{!validRegistry && <Text style={styles.small}>Digite uma matrícula válida</Text>}
 				</View>
 
 				<View style={styles.inputContainer}>
@@ -40,6 +53,7 @@ export default function LoginScreen() {
 							secureTextEntry={!showPassword}
 							value={password}
 							onChangeText={setPassword}
+							maxLength={150}
 						/>
 						<ShowPasswordButton showPassword={showPassword} setShowPassword={setShowPassword} />
 					</View>
@@ -97,7 +111,10 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		paddingHorizontal: 12,
 		paddingVertical: 10,
-		// marginBottom: 12,
+	},
+	small: {
+		fontSize: 12,
+		color: "#f00",
 	},
 	passwordContainer: {
 		flexDirection: "row",

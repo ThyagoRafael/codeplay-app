@@ -1,23 +1,50 @@
-import BackButton from "@/components/BackButton";
+import ShowPasswordButton from "@/components/ShowPasswordButton";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function VerifyCodeScreen() {
+export default function NewPasswordScreen() {
 	const [newPassword, setNewPassword] = useState("");
+	const [validNewPassword, setValidNewPassword] = useState<boolean>(true);
 	const [confirmNewPassword, setConfirmNewPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [validConfirmNewPassword, setValidConfirmNewPassword] = useState<boolean>(true);
+	const [showNewPassword, setShowNewPassword] = useState(false);
+	const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+
+	const handleChangeNewPassword = (text: string) => {
+		setNewPassword(text);
+
+		const newPasswordRegex =
+			/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[.,@\\?$!#%&*\-_])[A-Za-z\d.,@\\?$!#%&*\-_]{8,60}$/;
+		setValidNewPassword(newPasswordRegex.test(text));
+
+		setValidConfirmNewPassword(text === confirmNewPassword);
+	};
+
+	const handleChangeConfirmNewPassword = (text: string) => {
+		setConfirmNewPassword(text);
+
+		setValidConfirmNewPassword(text === newPassword);
+	};
+
+	const handleSaveNewPassword = () => {
+		if (!newPassword || !validNewPassword) {
+			return Alert.alert("Atenção", "Digite uma senha válida!");
+		}
+
+		if (!confirmNewPassword || !validConfirmNewPassword) {
+			return Alert.alert("Atenção", "As senhas não se coincidem!");
+		}
+
+		handleNavigate();
+	};
 
 	const handleNavigate = () => {
-		router.dismissAll();
 		router.replace("/");
 	};
 
 	return (
 		<View style={styles.container}>
-			<BackButton />
-
 			<Text style={styles.title}>Esqueceu a senha</Text>
 
 			<View style={styles.card}>
@@ -29,17 +56,17 @@ export default function VerifyCodeScreen() {
 					<View style={styles.passwordContainer}>
 						<TextInput
 							style={styles.input}
-							secureTextEntry={!showPassword}
+							secureTextEntry={!showNewPassword}
 							placeholder="Insira sua nova senha"
 							value={newPassword}
-							onChangeText={setNewPassword}
+							onChangeText={handleChangeNewPassword}
+							maxLength={150}
 						/>
-						<Pressable onPress={() => setShowPassword(!showPassword)}>
-							<Text style={styles.showPassword}>{showPassword ? "🙈" : "👁️"}</Text>
-						</Pressable>
+						<ShowPasswordButton showPassword={showNewPassword} setShowPassword={setShowNewPassword} />
 					</View>
+					{!validNewPassword && <Text style={styles.small}>Digite uma senha válida!</Text>}
 
-					<View>
+					<View style={styles.passwordList}>
 						<Text style={styles.info}>A senha deve conter:</Text>
 
 						<View style={styles.listItem}>
@@ -74,19 +101,22 @@ export default function VerifyCodeScreen() {
 					<View style={styles.passwordContainer}>
 						<TextInput
 							style={styles.input}
-							secureTextEntry={!showConfirmPassword}
+							secureTextEntry={!showConfirmNewPassword}
 							placeholder="Confirme sua nova senha"
 							value={confirmNewPassword}
-							onChangeText={setConfirmNewPassword}
+							onChangeText={handleChangeConfirmNewPassword}
+							maxLength={150}
 						/>
-						<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-							<Text style={styles.showPassword}>{showConfirmPassword ? "🙈" : "👁️"}</Text>
-						</Pressable>
+						<ShowPasswordButton
+							showPassword={showConfirmNewPassword}
+							setShowPassword={setShowConfirmNewPassword}
+						/>
 					</View>
+					{!validConfirmNewPassword && <Text style={styles.small}>As senhas não se coincidem!</Text>}
 				</View>
 			</View>
 
-			<Pressable style={styles.button} onPress={handleNavigate}>
+			<Pressable style={styles.button} onPress={handleSaveNewPassword}>
 				<Text style={styles.buttonText}>Confirmar nova senha</Text>
 			</Pressable>
 		</View>
@@ -103,7 +133,7 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 22,
 		fontWeight: "700",
-		marginTop: 12,
+		marginTop: 24,
 	},
 	card: {
 		backgroundColor: "#fff",
@@ -130,8 +160,12 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		paddingHorizontal: 12,
 		paddingVertical: 10,
-		marginBottom: 12,
 		flex: 1,
+	},
+	small: {
+		fontSize: 12,
+		color: "#f00",
+		marginTop: 4,
 	},
 	button: {
 		backgroundColor: "#2E6FF2",
@@ -153,6 +187,9 @@ const styles = StyleSheet.create({
 	passwordContainer: {
 		flexDirection: "row",
 		alignItems: "center",
+	},
+	passwordList: {
+		marginTop: 12,
 	},
 	listItem: {
 		flexDirection: "row",

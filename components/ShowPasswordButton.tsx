@@ -9,7 +9,7 @@ interface Props {
 export default function ShowPasswordButton({ showPassword, setShowPassword }: Props) {
 	return (
 		<Pressable onPress={() => setShowPassword(!showPassword)} style={styles.showPasswordButton}>
-			{showPassword ? <AntDesign name="eye" size={24} /> : <AntDesign name="eye-invisible" size={24} />}
+			<AntDesign name={showPassword ? "eye" : "eye-invisible"} size={24} />
 		</Pressable>
 	);
 }

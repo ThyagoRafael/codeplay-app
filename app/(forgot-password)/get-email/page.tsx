@@ -1,10 +1,26 @@
 import BackButton from "@/components/BackButton";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
-export default function ForgotPasswordScreen() {
+export default function GetEmailScreen() {
 	const [email, setEmail] = useState("");
+	const [validEmail, setValidEmail] = useState<boolean>(true);
+
+	const handleChangeEmail = (text: string) => {
+		setEmail(text);
+
+		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+		setValidEmail(emailRegex.test(text));
+	};
+
+	const handleSendCode = () => {
+		if (!email || !validEmail) {
+			return Alert.alert("Atenção", "Digite um email válido!");
+		}
+
+		router.push("/(forgot-password)/verify-code/page");
+	};
 
 	return (
 		<View style={styles.container}>
@@ -21,13 +37,15 @@ export default function ForgotPasswordScreen() {
 					style={styles.input}
 					placeholder="Insira seu e-mail"
 					value={email}
-					onChangeText={setEmail}
+					onChangeText={handleChangeEmail}
+					keyboardType="email-address"
 				/>
+				{!validEmail && <Text style={styles.small}>Digite um email válido!</Text>}
 			</View>
 
-			<Link href={"/(forgot-password)/verify-code/page"} style={styles.button}>
+			<Pressable onPress={handleSendCode} style={styles.button}>
 				<Text style={styles.buttonText}>Enviar código de recuperação</Text>
-			</Link>
+			</Pressable>
 		</View>
 	);
 }
@@ -70,6 +88,10 @@ const styles = StyleSheet.create({
 		backgroundColor: "#f2f3f5",
 		borderRadius: 8,
 		padding: 10,
+	},
+	small: {
+		fontSize: 12,
+		color: "#f00",
 	},
 	button: {
 		backgroundColor: "#2E6FF2",

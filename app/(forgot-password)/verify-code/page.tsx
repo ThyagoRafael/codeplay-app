@@ -1,16 +1,52 @@
 import BackButton from "@/components/BackButton";
-import { Link, useRouter } from "expo-router";
-import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { router } from "expo-router";
+import { useRef, useState } from "react";
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 export default function VerifyCodeScreen() {
-	const router = useRouter();
-	const [code, setCode] = useState(["", "", "", "", ""]);
+	const [code, setCode] = useState<string[]>(["", "", "", "", ""]);
+	const [validCode, setValidCode] = useState<boolean>(true);
+	const inputsRef = useRef<(TextInput | null)[]>([]);
 
 	const handleChange = (text: string, index: number) => {
+		const newText = text.replace(/[^0-9]/g, "");
+
 		const newCode = [...code];
-		newCode[index] = text;
+		newCode[index] = newText;
 		setCode(newCode);
+
+		setValidCode(newCode.join("").length === 5);
+
+		if (newText && index < inputsRef.current.length - 1) {
+			inputsRef.current[index + 1]?.focus();
+		}
+	};
+
+	const handleBackspace = (e: any, index: number) => {
+		if (e.nativeEvent.key === "Backspace") {
+			if (code[index] !== "") {
+				const newCode = [...code];
+				newCode[index] = "";
+				setCode(newCode);
+			} else if (index > 0) {
+				inputsRef.current[index - 1]?.focus();
+			}
+		}
+	};
+
+	const handleVerifyCode = () => {
+		if (code.every((element) => element === "") || !validCode) {
+			return Alert.alert("Atenção", "Digite um código válido!");
+		}
+
+		// Chamada pro back pra verificação do código
+
+		handleNavigate();
+	};
+
+	const handleNavigate = () => {
+		router.dismissAll();
+		router.replace("/(forgot-password)/new-password/page");
 	};
 
 	return (
@@ -34,22 +70,27 @@ export default function VerifyCodeScreen() {
 							maxLength={1}
 							keyboardType="numeric"
 							value={digit}
+							ref={(el) => {
+								inputsRef.current[index] = el;
+							}}
 							onChangeText={(text) => handleChange(text, index)}
+							onKeyPress={(e) => handleBackspace(e, index)}
 						/>
 					))}
 				</View>
+				{!validCode && <Text style={styles.small}>Digite um código válido!</Text>}
 			</View>
 
-			<Link href={"/(forgot-password)/new-password/page"} style={styles.button}>
+			<Pressable style={styles.button} onPress={handleVerifyCode}>
 				<Text style={styles.buttonText}>Verificar Código</Text>
-			</Link>
+			</Pressable>
 
-			<Text style={styles.resendText}>
-				Não recebeu o e-mail?
+			<View style={styles.resendTextContainer}>
+				<Text style={styles.resendText}>Não recebeu o e-mail?</Text>
 				<Pressable onPress={() => router.back()}>
 					<Text style={styles.link}>Solicite Novamente</Text>
 				</Pressable>
-			</Text>
+			</View>
 		</View>
 	);
 }
@@ -60,10 +101,6 @@ const styles = StyleSheet.create({
 		backgroundColor: "#f6f9ff",
 		padding: 24,
 		alignItems: "flex-start",
-	},
-	backArrow: {
-		fontSize: 22,
-		color: "#000",
 	},
 	title: {
 		fontSize: 22,
@@ -101,6 +138,10 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: "600",
 	},
+	small: {
+		fontSize: 12,
+		color: "#f00",
+	},
 	button: {
 		backgroundColor: "#2E6FF2",
 		paddingVertical: 14,
@@ -114,15 +155,18 @@ const styles = StyleSheet.create({
 		fontWeight: "700",
 		fontSize: 16,
 	},
-	resendText: {
-		textAlign: "center",
+	resendTextContainer: {
+		justifyContent: "center",
 		marginTop: 16,
-		color: "#555",
 		width: "100%",
+		flexDirection: "row",
+		gap: 3,
+	},
+	resendText: {
+		color: "#555",
 	},
 	link: {
 		color: "#2E6FF2",
 		fontWeight: "600",
-		marginLeft: 3,
 	},
 });
