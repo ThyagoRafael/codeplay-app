@@ -1,11 +1,14 @@
 {
 	"user": {
-		"name": "Carlinhos Maia",
-		"email": "labobonico@email.com",
-		"password": "morangodoamor",
+		"name": "Carlinhos",
 		"class": "ENSOF1AM2",
 		"learningProgress": 48,
-		"imageURL": "../assets/foto_perfil.png"
+		"imageURL": "fotoPerfil"
 	},
-	"courses": {}
+	"courses": [
+		{ "id": 1, "name": "Lógica e Estruturas algébricas" },
+		{ "id": 2, "name": "Algoritmos e Programação" },
+		{ "id": 3, "name": "Introdução à Banco de Dados" },
+		{ "id": 4, "name": "Arquitetura de Computadores" }
+	]
 }
