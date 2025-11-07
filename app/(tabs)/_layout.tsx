@@ -29,7 +29,7 @@ export default function TabsLayout() {
 			}}
 		>
 			<Tabs.Screen
-				name="home/page"
+				name="home"
 				options={{
 					title: "Início",
 					headerShown: false,

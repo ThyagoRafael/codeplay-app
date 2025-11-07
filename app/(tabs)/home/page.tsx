@@ -1,9 +1,31 @@
 import mockData from "@/assets/mocks/data/db.json";
 import { colors } from "@/constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { useState } from "react";
+import {
+	Image,
+	type NativeScrollEvent,
+	type NativeSyntheticEvent,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
 
 export default function Home() {
+	const [hasScrolled, setHasScrolled] = useState<boolean>(false);
+
+	const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+		const offsetY = event.nativeEvent.contentOffset.y;
+		setHasScrolled(offsetY > 5); // ativa quando o usuário rola um pouquinho
+	};
+
+	const handleNavigate = (courseId: number, courseName: string) => {
+		router.push({ pathname: "/home/topics/[courseId]", params: { courseId, courseName } });
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.userCard}>
@@ -15,32 +37,41 @@ export default function Home() {
 					</View>
 					<View style={styles.userDescriptionContainer}>
 						<Text style={styles.descriptionTitle}>Bem-Vindo, {mockData.user.name}!</Text>
-						<View style={styles.progressContainer}>
-							<View style={styles.progressDescription}>
-								<Text style={styles.progressLabel}>Progresso total</Text>
-								<Text style={styles.progressLabel}>{mockData.user.learningProgress}%</Text>
-							</View>
-							<View style={styles.progressBarContainer}>
-								<View style={styles.progressBar}></View>
-							</View>
-						</View>
 					</View>
 				</View>
 				<LinearGradient colors={["rgba(0,0,0,0.2)", "transparent"]} style={styles.shadowBottom} />
 			</View>
 
-			<View style={styles.coursesList}>
-				{mockData.courses.map((course) => (
-					<Pressable key={course.id} style={styles.courseButton}>
-						<View style={styles.courseIconContainer}>
-							<Image
-								source={require("@/assets/mocks/images/course_icon.png")}
-								style={styles.courseIcon}
-							/>
-						</View>
-						<Text style={styles.courseName}>{course.name}</Text>
-					</Pressable>
-				))}
+			<View style={{ flex: 1, width: "100%", position: "relative" }}>
+				{hasScrolled && (
+					<LinearGradient colors={["rgba(0,0,0,0.15)", "transparent"]} style={styles.scrollTopBorder} />
+				)}
+				<ScrollView
+					contentContainerStyle={styles.coursesList}
+					showsVerticalScrollIndicator={false}
+					onScroll={handleScroll}
+					scrollEventThrottle={16}
+				>
+					{mockData.courses.map((course) => (
+						<Pressable
+							key={course.id}
+							style={styles.courseButton}
+							onPress={() => handleNavigate(course.id, course.name)}
+						>
+							<View style={styles.courseIconContainer}>
+								<Image
+									source={require("@/assets/mocks/images/course_icon.png")}
+									style={styles.courseIcon}
+								/>
+							</View>
+							<Text style={styles.courseName}>{course.name}</Text>
+						</Pressable>
+					))}
+					<LinearGradient
+						colors={["transparent", "rgba(0,0,0,0.15)"]}
+						style={styles.scrollBottomBorder}
+					/>
+				</ScrollView>
 			</View>
 		</View>
 	);
@@ -51,7 +82,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: "center",
 		backgroundColor: colors.mainBackgroundColor,
-		paddingVertical: 48,
+		paddingTop: 48,
 		paddingHorizontal: 32,
 	},
 	userCard: {
@@ -81,33 +112,11 @@ const styles = StyleSheet.create({
 	},
 	userDescriptionContainer: {
 		width: "60%",
-		justifyContent: "space-between",
+		justifyContent: "center",
 	},
 	descriptionTitle: {
 		fontSize: 20,
 		fontWeight: "600",
-	},
-	progressContainer: {
-		gap: 2,
-	},
-	progressDescription: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-	},
-	progressLabel: {
-		fontWeight: "400",
-	},
-	progressBarContainer: {
-		width: "100%",
-		height: 4,
-		backgroundColor: "#d9d9d9",
-		borderRadius: 4,
-	},
-	progressBar: {
-		width: `${mockData.user.learningProgress}%`,
-		height: "100%",
-		backgroundColor: "#8f8f8f",
-		borderRadius: 4,
 	},
 	shadowBottom: {
 		position: "absolute",
@@ -119,7 +128,23 @@ const styles = StyleSheet.create({
 	},
 	coursesList: {
 		width: "100%",
-		gap: 30,
+		gap: 38,
+		paddingBottom: 30,
+	},
+	scrollTopBorder: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		height: 4,
+		zIndex: 10,
+	},
+	scrollBottomBorder: {
+		top: 0,
+		left: 0,
+		right: 0,
+		height: 4,
+		zIndex: 10,
 	},
 	courseButton: {
 		width: "100%",
